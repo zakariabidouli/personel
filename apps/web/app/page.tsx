@@ -7,10 +7,14 @@ import { Experience } from "@/components/experience"
 import { Skills } from "@/components/skills"
 import { Contact } from "@/components/contact"
 import { Footer } from "@/components/footer"
+import { BackgroundDecor } from "@/components/background-decor"
+import { ScrollProgress } from "@/components/scroll-progress"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground relative">
+      <BackgroundDecor />
+      <ScrollProgress />
       <Navigation />
       <Hero />
       <About />

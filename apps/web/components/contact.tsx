@@ -6,6 +6,7 @@ import { useState, useMemo } from "react"
 import { Mail, MessageSquare, Send, Trash } from "lucide-react"
 import { api } from "@/lib/api"
 import { useContacts } from "@/lib/hooks"
+import { SectionBackground } from "@/components/section-background"
 
 export function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" })
@@ -40,25 +41,36 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Get In Touch</h2>
-          <div className="w-12 h-1 bg-gradient-to-r from-accent to-primary mx-auto"></div>
-          <p className="text-muted-foreground mt-4 text-lg">Have a project in mind? Let's collaborate!</p>
+    <section id="contact" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
+      <SectionBackground variant="grid" />
+      <div className="relative max-w-4xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+            Get In Touch
+          </h2>
+          <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
+          <p className="text-muted-foreground mt-6 text-lg">Have a project in mind? Let's collaborate!</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div className="p-6 bg-card border border-border rounded-lg">
-            <Mail className="w-8 h-8 text-accent mb-3" />
-            <h3 className="font-bold mb-2">Email</h3>
-            <a href="mailto:hello@zakaria.dev" className="text-muted-foreground hover:text-accent transition-colors">
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          <div className="group p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:-translate-y-1">
+            <div className="p-3 bg-accent/10 border border-accent/20 rounded-lg w-fit mb-4 group-hover:bg-accent/20 transition-colors">
+              <Mail className="w-6 h-6 text-accent" />
+            </div>
+            <h3 className="font-bold text-lg mb-2 text-foreground">Email</h3>
+            <a
+              href="mailto:bidouliwork@gmail.com"
+              className="text-muted-foreground hover:text-accent transition-colors"
+              aria-label="Send email to bidouliwork@gmail.com"
+            >
               bidouliwork@gmail.com
             </a>
           </div>
-          <div className="p-6 bg-card border border-border rounded-lg">
-            <MessageSquare className="w-8 h-8 text-accent mb-3" />
-            <h3 className="font-bold mb-2">Direct Message</h3>
+          <div className="group p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/10 hover:-translate-y-1">
+            <div className="p-3 bg-accent/10 border border-accent/20 rounded-lg w-fit mb-4 group-hover:bg-accent/20 transition-colors">
+              <MessageSquare className="w-6 h-6 text-accent" />
+            </div>
+            <h3 className="font-bold text-lg mb-2 text-foreground">Direct Message</h3>
             <p className="text-muted-foreground">Connect with me on LinkedIn</p>
           </div>
         </div>
@@ -98,20 +110,22 @@ export function Contact() {
           <button
             type="submit"
             disabled={loading || submitted}
-            className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/50 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group w-full px-6 py-3.5 bg-gradient-to-r from-accent to-primary text-accent-foreground rounded-lg font-semibold hover:shadow-2xl hover:shadow-accent/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitted ? "Message Sent!" : loading ? "Sending..." : "Send Message"}
-            {!submitted && !loading && <Send className="w-4 h-4" />}
+            {!submitted && !loading && <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}
           </button>
         </form>
 
         {/* Admin Messages Table */}
         {isAdmin && (
-          <div className="mt-16">
-            <h3 className="text-2xl font-bold mb-6 text-center">Messages {contacts && `(${contacts.length})`}</h3>
+          <div className="mt-20">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-8 text-center bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+              Messages {contacts && `(${contacts.length})`}
+            </h3>
             {contacts && contacts.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse bg-card border border-border rounded-lg">
+              <div className="overflow-x-auto rounded-xl border border-border">
+                <table className="w-full border-collapse bg-card rounded-lg">
                   <thead>
                     <tr className="border-b border-border">
                       <th className="px-4 py-3 text-left text-sm font-semibold">Name</th>
@@ -166,7 +180,8 @@ export function Contact() {
                               }
                             }}
                             title="Delete Message"
-                            className="p-2 border border-border rounded hover:bg-secondary transition-colors"
+                            className="p-2 bg-destructive/10 border border-destructive/20 rounded-lg hover:bg-destructive/20 transition-colors"
+                            aria-label={`Delete message from ${contact.name}`}
                           >
                             <Trash className="w-4 h-4 text-destructive" />
                           </button>

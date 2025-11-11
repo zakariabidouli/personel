@@ -144,6 +144,13 @@ class ApiClient {
     })
   }
 
+  async updateProject(id: number, data: Partial<Project>): Promise<Project> {
+    return this.fetch<Project>(`/projects/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
   async deleteProject(id: number): Promise<void> {
     await this.fetch<void>(`/projects/${id}`, {
       method: 'DELETE',

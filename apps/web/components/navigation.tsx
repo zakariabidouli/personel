@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const [activeSection, setActiveSection] = useState("")
 
   const navItems = [
     { label: "About", href: "#about" },
@@ -14,34 +15,74 @@ export function Navigation() {
     { label: "Contact", href: "#contact" },
   ]
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navItems.map((item) => item.href.substring(1))
+      const scrollPosition = window.scrollY + 100
+
+      for (const section of sections) {
+        const element = document.getElementById(section)
+        if (element) {
+          const { offsetTop, offsetHeight } = element
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    handleScroll()
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
   return (
-    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
             <Link
               href="#"
-              className="text-xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent"
+              className="text-xl font-bold bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+              aria-label="Home"
             >
               Zbidouli
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-              >
-                {item.label}
-              </a>
-            ))}
+          <div className="hidden md:flex space-x-1">
+            {navItems.map((item) => {
+              const sectionId = item.href.substring(1)
+              const isActive = activeSection === sectionId
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isActive
+                      ? "text-accent bg-accent/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-accent rounded-full"></span>
+                  )}
+                </a>
+              )
+            })}
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={isOpen}
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -55,17 +96,25 @@ export function Navigation() {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="block px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors duration-200 rounded"
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </a>
-            ))}
+          <div className="md:hidden pb-4 space-y-2 animate-in slide-in-from-top-2">
+            {navItems.map((item) => {
+              const sectionId = item.href.substring(1)
+              const isActive = activeSection === sectionId
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`block px-4 py-2 rounded-lg transition-colors duration-200 ${
+                    isActive
+                      ? "text-accent bg-accent/10 font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </a>
+              )
+            })}
           </div>
         )}
       </div>
