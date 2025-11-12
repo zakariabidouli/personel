@@ -42,7 +42,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-      <SectionBackground variant="grid" />
+      <SectionBackground variant="hexagons" />
       <div className="relative max-w-4xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">

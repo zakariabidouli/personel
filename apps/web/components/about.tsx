@@ -9,7 +9,7 @@ export function About() {
   if (loading) {
     return (
       <section id="about" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground />
+        <SectionBackground variant="grid" />
         <div className="relative max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
@@ -26,7 +26,7 @@ export function About() {
   if (error) {
     return (
       <section id="about" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground />
+        <SectionBackground variant="grid"/>
         <div className="relative max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">About Me</h2>
@@ -42,7 +42,7 @@ export function About() {
 
   return (
     <section id="about" className="relative py-24 px-4 sm:px-6 lg:px-8">
-      <SectionBackground variant="circles" />
+      <SectionBackground variant="grid" />
       <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">

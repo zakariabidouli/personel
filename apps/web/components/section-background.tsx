@@ -177,7 +177,7 @@ export function SectionBackground({ variant = "hexagons", opacity = "0.03" }: Se
           </defs>
           <rect width="100%" height="100%" fill="url(#dots)" />
         </svg>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>        
       </div>
     )
   }

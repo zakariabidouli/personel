@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+// import ThemeToggle from "next-themes"
+import ThemeToggle from "@/components/ThemeToggle"
+
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -74,6 +77,10 @@ export function Navigation() {
                 </a>
               )
             })}
+
+            {/* add a button to toggle the dark mode   */}
+            <ThemeToggle />
+
           </div>
 
           {/* Mobile Menu Button */}

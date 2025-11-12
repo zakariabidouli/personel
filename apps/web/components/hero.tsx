@@ -22,7 +22,7 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <SectionBackground variant="hero" />
+      <SectionBackground variant="grid" />
 
       <div className="relative max-w-4xl mx-auto text-center z-10">
         <div className="mb-8 inline-block animate-in fade-in slide-in-from-top-4 duration-700">

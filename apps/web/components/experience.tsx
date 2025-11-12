@@ -68,7 +68,7 @@ export function Experience() {
   if (loading) {
     return (
       <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="waves" />
+        <SectionBackground variant="grid" />
         <div className="relative max-w-5xl mx-auto">
           {sectionHeader}
           <div className="text-center text-muted-foreground">Loading experience...</div>
@@ -80,7 +80,7 @@ export function Experience() {
   if (error) {
     return (
       <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="waves" />
+        <SectionBackground variant="grid" />
         <div className="relative max-w-5xl mx-auto">
           {sectionHeader}
           <div className="text-center text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
@@ -94,7 +94,7 @@ export function Experience() {
   if (!experiences || experiences.length === 0) {
     return (
       <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="waves" />
+        <SectionBackground variant="grid" />
         <div className="relative max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             {sectionHeader}

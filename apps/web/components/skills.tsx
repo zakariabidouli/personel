@@ -39,7 +39,7 @@ export function Skills() {
   if (loading) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="dots" />
+        <SectionBackground variant="hexagons" />
         <div className="relative max-w-5xl mx-auto">
           {sectionHeader}
           <div className="text-center text-muted-foreground">Loading skills...</div>
@@ -51,7 +51,7 @@ export function Skills() {
   if (error) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="dots" />
+        <SectionBackground variant="hexagons" />
         <div className="relative max-w-5xl mx-auto">
           {sectionHeader}
           <div className="text-center text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-4">
@@ -65,7 +65,7 @@ export function Skills() {
   if (!categories || categories.length === 0) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="dots" />
+        <SectionBackground variant="hexagons" />
         <div className="relative max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             {sectionHeader}
