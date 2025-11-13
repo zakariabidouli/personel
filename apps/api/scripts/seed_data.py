@@ -26,7 +26,7 @@ def seed_projects(db: Session):
     """Seed projects table"""
     projects = [
         {
-            "title": "Transcendence - Multiplayer Game",
+            "title": "PingPong - Multiplayer Game",
             "description": "Real-time multiplayer game platform built as part of 1337 School curriculum. Features live player interactions, matchmaking system, and responsive gameplay with modern web technologies.",
             "image": "/transcendence-game.png",
             "tags": ["Next.js", "React", "TypeScript", "WebSocket"],
@@ -59,7 +59,7 @@ def seed_projects(db: Session):
             "title": "Supply Chain Analytics Dashboard",
             "description": "Interactive data warehouse visualization dashboard for supply chain management. Features real-time inventory tracking, predictive alerts for stock levels, and comprehensive logistics analytics.",
             "image": "/supply-chain-dashboard.png",
-            "tags": ["Python", "PostgreSQL", "React", "Data Visualization"],
+            "tags": ["Python", "PostgreSQL", "Data Visualization"],
             "live_url": None,
             "github_url": None,
             "featured": "true",
@@ -103,7 +103,7 @@ def seed_experiences(db: Session):
             "start_date": "2021-09",
             "end_date": None,
             "description": "Intensive peer-to-peer learning program focused on software engineering fundamentals. Built multiple complex projects including a multiplayer game platform and HTTP server from scratch.",
-            "tags": ["C++", "React", "Next.js", "System Programming"],
+            "tags": ["Bash", "C", "C++", "Python", "React", "Next.js", "System Programming"],
             "order_index": 2
         }
     ]
@@ -120,7 +120,7 @@ def seed_skills(db: Session):
         {
             "name": "Backend Development",
             "order_index": 0,
-            "skills": ["Java", "Spring Boot", "Python", "C++", "NestJS", "REST APIs"]
+            "skills": ["Spring Boot", "FastApi", "C++", "NestJS", "REST APIs"]
         },
         {
             "name": "Frontend Development",
@@ -130,7 +130,7 @@ def seed_skills(db: Session):
         {
             "name": "Databases",
             "order_index": 2,
-            "skills": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "SQL"]
+            "skills": ["PostgreSQL",  "MongoDB", "Redis", "GraphQL"]
         },
         {
             "name": "DevOps & Tools",
@@ -162,7 +162,7 @@ def seed_about(db: Session):
     about_content = [
         {
             "section": "intro",
-            "content": "I'm a full-stack developer passionate about building practical, well-engineered solutions. With experience across backend and frontend technologies, I enjoy tackling complex problems and writing clean, maintainable code.",
+            "content": "I'm a full-stack developer passionate about crafting user friendly, well-engineered solutions. With experience across backend and frontend technologies, I enjoy tackling complex problems.",
             "order_index": 0
         },
         {
@@ -172,8 +172,13 @@ def seed_about(db: Session):
         },
         {
             "section": "paragraph2",
-            "content": "Currently deepening my skills at 1337 School (42 Network), where I've built everything from HTTP servers in C++ to modern web applications. I believe in continuous learning and enjoy exploring new technologies while maintaining a focus on fundamentals.",
+            "content": "Currently still sharpening my skills at 1337 School (42 Network), where I've learn and built everything from Shell in C, HTTP servers in C++ to modern web applications. I believe in continuous learning and enjoy exploring new technologies while maintaining a focus on fundamentals.",
             "order_index": 2
+        },
+        {
+            "section": "paragraph3",
+            "content": "I'm always looking for new challenges and opportunities to grow. If you're interested in working with me, please don't hesitate to contact me.",
+            "order_index": 3
         }
     ]
     
@@ -181,7 +186,7 @@ def seed_about(db: Session):
         {"number": "4+", "label": "Major Projects", "order_index": 0},
         {"number": "2+", "label": "Years Experience", "order_index": 1},
         {"number": "10+", "label": "Technologies", "order_index": 2},
-        {"number": "100%", "label": "Commitment", "order_index": 3}
+        {"number": "100%", "label": "Passion", "order_index": 3}
     ]
     
     for about_data in about_content:
@@ -214,7 +219,13 @@ def seed_social_links(db: Session):
             "url": "mailto:bidouli.zak@gmail.com",
             "icon_name": "Mail",
             "order_index": 2
-        }
+        },
+        # {
+        #     "platform": "repository",
+        #     "url": "https://github.com/zakariabidouli/personel",
+        #     "icon_name": "repository",
+        #     "order_index": 3
+        # }
     ]
     
     for link_data in social_links:

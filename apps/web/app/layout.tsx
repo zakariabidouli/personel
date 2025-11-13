@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Zakaria Bidouli - Software Engineer & Creative Developer",
-  description: "Portfolio of Zakaria Bidouli - Full-stack developer specializing in elegant, performant digital experiences. View my projects, skills, and experience.",
+  description: "Zakaria Bidouli - Full-stack developer specializing in elegant, performant digital experiences. View my projects, skills, and experience.",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
