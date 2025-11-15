@@ -115,6 +115,11 @@ export function Hero() {
     element?.scrollIntoView({ behavior: "smooth" })
   }
 
+  const scrollToAbout = () => {
+    const element = document.getElementById("about")
+    element?.scrollIntoView({ behavior: "smooth" })
+  }
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* <SectionBackground variant="grid" /> */}
@@ -123,13 +128,16 @@ export function Hero() {
         <div className="mb-8 inline-block animate-in fade-in slide-in-from-top-4 duration-700">
           <div className="px-6 py-2.5 bg-gradient-to-r from-accent/10 to-primary/10 rounded-full border border-accent/20 backdrop-blur-sm">
             <p className="text-sm font-medium bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-              who am I ?
+              {/* on click scroll to about section */}
+              <button onClick={scrollToAbout}>
+                who am I ?
+              </button>
             </p>
           </div>
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-          Software Engineer &{" "}
+          Software Craftsman &{" "}
           <span className="bg-gradient-to-r from-accent via-primary to-accent bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
             Creative Developer
           </span>

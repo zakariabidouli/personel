@@ -1,12 +1,17 @@
 "use client"
 
-import { Github, Linkedin, Twitter, Mail } from "lucide-react"
+import { Github, Linkedin, Twitter, Mail, Icon } from "lucide-react"
+import { useSocialLinks } from "@/lib/hooks"
+import { SectionBackground } from "@/components/section-background" 
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const { links } = useSocialLinks()
 
   return (
-    <footer className="border-t border-border bg-card/50">
+    <footer className="relative border-t border-border bg-card/50">
+      <SectionBackground variant="grid" />
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
@@ -32,7 +37,21 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+
+          {links && links.length > 0 && (
+            <div>
+              <h4 className="font-bold mb-4">Connect</h4>
+              <div className="flex gap-4">
+                {links.map((link) => (
+                  <a key={link.id} href={link.url} className="text-muted-foreground hover:text-accent transition-colors">
+                    {link.icon_name}       
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          </div>
+          {/* <div>
             <h4 className="font-bold mb-4">Connect</h4>
             <div className="flex gap-4">
               {[
@@ -52,7 +71,7 @@ export function Footer() {
               ))}
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
           <p>&copy; {currentYear} Zakaria. All rights reserved.</p>

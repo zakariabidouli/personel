@@ -189,7 +189,8 @@ export function Experience() {
   }
 
   return (
-    <section id="experience" className="py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
+    <section id="experience" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
+      <SectionBackground variant="dots" />
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-12">
           {sectionHeader}

@@ -27,19 +27,18 @@ export function Skills() {
   }
 
   const sectionHeader = (
-    <div className="text-center mb-16">
+    <div className="text-center mb-16 w-full">
       <h2 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-        Skills & Expertise
+        Skills & Technologies
       </h2>
       <div className="w-16 h-1 bg-gradient-to-r from-accent via-primary to-accent mx-auto rounded-full"></div>
-      <p className="text-muted-foreground mt-6 text-lg">Technologies and tools I work with</p>
+      {/* <p className="text-muted-foreground mt-6 text-lg">Technologies and tools I work with</p> */}
     </div>
   )
 
   if (loading) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="hexagons" />
         <div className="relative max-w-5xl mx-auto">
           {sectionHeader}
           <div className="text-center text-muted-foreground">Loading skills...</div>
@@ -65,7 +64,6 @@ export function Skills() {
   if (!categories || categories.length === 0) {
     return (
       <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8">
-        <SectionBackground variant="hexagons" />
         <div className="relative max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             {sectionHeader}
@@ -113,10 +111,11 @@ export function Skills() {
     )
   }
 
-  return (
-    <section id="skills" className="py-24 px-4 sm:px-6 lg:px-8">
+  return ( 
+    <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
+      <SectionBackground variant="dots" />
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center justif  y-between mb-12">
           {sectionHeader}
           {isAdmin && (
             <button

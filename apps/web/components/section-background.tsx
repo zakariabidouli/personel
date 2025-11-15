@@ -153,33 +153,55 @@ export function SectionBackground({ variant = "hexagons", opacity = "0.03" }: Se
     )
   }
 
+
+  // cyber punk
+  
   // Dots Pattern
   if (variant === "dots") {
+    const dots = Array.from({ length: 50 }, (_, i) => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 1.5 + 0.8,
+      color: Math.random() > 0.7 ? '#22c55e' : '#a855f7'
+    }));
+  
     return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={opacityStyle}>
-        <svg
-          className="absolute inset-0 w-full h-full"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <defs>
-            <pattern
-              id="dots"
-              x="0"
-              y="0"
-              width="20"
-              height="20"
-              patternUnits="userSpaceOnUse"
-            >
-              <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dots)" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ opacity }}>
+        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+          {dots.map((dot, i) => (
+            <circle key={i} cx={dot.x} cy={dot.y} r={dot.size} fill={dot.color} opacity="0.6" />
+          ))}
         </svg>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>        
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/3 left-1/4 w-72 h-72 bg-green-500/8 rounded-full blur-3xl animate-pulse delay-1000"></div>        
       </div>
-    )
+    );
+  
+    // return (
+    //   <div className="absolute inset-0 overflow-hidden pointer-events-none" style={opacityStyle}>
+    //     <svg
+    //       className="absolute inset-0 w-full h-full"
+    //       xmlns="http://www.w3.org/2000/svg"
+    //       viewBox="0 0 100 100"
+    //       preserveAspectRatio="xMidYMid slice"
+    //     >
+    //       <defs>
+    //         <pattern
+    //           id="dots"
+    //           x="0"
+    //           y="0"
+    //           width="20"
+    //           height="20"
+    //           patternUnits="userSpaceOnUse"
+    //         >
+    //           <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+    //         </pattern>
+    //       </defs>
+    //       <rect width="100%" height="100%" fill="url(#dots)" />
+    //     </svg>
+    //     <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>        
+    //   </div>
+    // )
   }
 
   // Default fallback

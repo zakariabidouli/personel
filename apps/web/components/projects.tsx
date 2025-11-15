@@ -383,7 +383,7 @@ export function Projects() {
   return (
     <>
       <section id="projects" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <SectionBackground variant="hexagons" />
+        <SectionBackground variant="dots" />
         <div className="relative max-w-6xl mx-auto">
           <div className="relative mb-12">
             {sectionHeader}
