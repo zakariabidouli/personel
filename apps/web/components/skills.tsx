@@ -2,27 +2,74 @@
 
 import { useSkills } from "@/lib/hooks"
 import { api } from "@/lib/api"
-import { Plus, Trash, Code } from "lucide-react"
-import { useMemo, useState } from "react"
+import { Plus, Trash, Code, Edit } from "lucide-react"
+import { useState } from "react"
 import { SectionBackground } from "@/components/section-background"
+import { useAdmin } from "@/contexts/AdminContext"
 
 export function Skills() {
   const { categories, loading, error, refresh } = useSkills()
-  const isAdmin = useMemo(() => process.env.NEXT_PUBLIC_ADMIN === "true", [])
+  const { isAdmin } = useAdmin()
   const [showCategoryForm, setShowCategoryForm] = useState(false)
+  const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null)
   const [newCategory, setNewCategory] = useState("")
   const [newSkill, setNewSkill] = useState<{ [key: number]: string }>({})
+  const [editingSkillId, setEditingSkillId] = useState<{ [key: number]: number | null }>({})
 
-  async function handleCreateCategory(e: React.FormEvent) {
+  async function handleCategorySubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!newCategory.trim()) return
     try {
-      await api.createSkillCategory({ name: newCategory.trim(), order_index: categories?.length || 0 })
+      if (editingCategoryId) {
+        await api.updateSkillCategory(editingCategoryId, { name: newCategory.trim() })
+      } else {
+        await api.createSkillCategory({ name: newCategory.trim(), order_index: categories?.length || 0 })
+      }
       setNewCategory("")
+      setEditingCategoryId(null)
       setShowCategoryForm(false)
       await refresh()
     } catch (err) {
-      console.error("Failed to create category:", err)
+      console.error(`Failed to ${editingCategoryId ? "update" : "create"} category:`, err)
+    }
+  }
+
+  const startEditCategory = (cat: typeof categories[0]) => {
+    setNewCategory(cat.name)
+    setEditingCategoryId(cat.id)
+    setShowCategoryForm(true)
+  }
+
+  const startEditSkill = (skill: { id: number; name: string }, categoryId: number) => {
+    setNewSkill({ ...newSkill, [categoryId]: skill.name })
+    setEditingSkillId({ ...editingSkillId, [categoryId]: skill.id })
+  }
+
+  async function handleSkillSubmit(categoryId: number) {
+    const name = (newSkill[categoryId] || "").trim()
+    const skillId = editingSkillId[categoryId]
+    if (!name) return
+    try {
+      if (skillId) {
+        await api.updateSkill(skillId, { name })
+      } else {
+        await api.createSkill({ name, category_id: categoryId, order_index: (categories?.find(c => c.id === categoryId)?.skills?.length || 0) })
+      }
+      setNewSkill({ ...newSkill, [categoryId]: "" })
+      setEditingSkillId({ ...editingSkillId, [categoryId]: null })
+      await refresh()
+    } catch (err) {
+      console.error(`Failed to ${skillId ? "update" : "create"} skill:`, err)
+    }
+  }
+
+  async function handleDeleteSkill(skillId: number) {
+    if (!confirm("Delete this skill?")) return
+    try {
+      await api.deleteSkill(skillId)
+      await refresh()
+    } catch (err) {
+      console.error("Failed to delete skill:", err)
     }
   }
 
@@ -69,7 +116,13 @@ export function Skills() {
             {sectionHeader}
             {isAdmin && (
               <button
-                onClick={() => setShowCategoryForm((v) => !v)}
+                onClick={() => {
+                  setShowCategoryForm((v) => !v)
+                  if (!showCategoryForm) {
+                    setNewCategory("")
+                    setEditingCategoryId(null)
+                  }
+                }}
                 title="Add Category"
                 className="ml-4 p-3 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20 hover:border-accent/40 transition-all duration-200"
                 aria-label="Add new skill category"
@@ -79,7 +132,7 @@ export function Skills() {
             )}
           </div>
           {isAdmin && showCategoryForm && (
-            <form onSubmit={handleCreateCategory} className="mb-10 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg max-w-xl mx-auto">
+            <form onSubmit={handleCategorySubmit} className="mb-10 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg max-w-xl mx-auto">
               <input
                 placeholder="New category name"
                 className="px-4 py-3 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all"
@@ -89,7 +142,11 @@ export function Skills() {
               <div className="flex gap-3 justify-end">
                 <button
                   type="button"
-                  onClick={() => setShowCategoryForm(false)}
+                  onClick={() => {
+                    setShowCategoryForm(false)
+                    setNewCategory("")
+                    setEditingCategoryId(null)
+                  }}
                   className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
                 >
                   Cancel
@@ -98,7 +155,7 @@ export function Skills() {
                   type="submit"
                   className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all"
                 >
-                  Create Category
+                  {editingCategoryId ? "Update Category" : "Create Category"}
                 </button>
               </div>
             </form>
@@ -115,7 +172,7 @@ export function Skills() {
     <section id="skills" className="relative py-24 px-4 sm:px-6 lg:px-8 bg-secondary/30">
       <SectionBackground variant="dots" />
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justif  y-between mb-12">
+        <div className="flex items-center justify-between mb-12">
           {sectionHeader}
           {isAdmin && (
             <button
@@ -131,7 +188,7 @@ export function Skills() {
 
         {isAdmin && showCategoryForm && (
           <form
-            onSubmit={handleCreateCategory}
+            onSubmit={handleCategorySubmit}
             className="mb-12 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg max-w-xl mx-auto"
           >
             <input
@@ -140,21 +197,25 @@ export function Skills() {
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
             />
-            <div className="flex gap-3 justify-end">
-              <button
-                type="button"
-                onClick={() => setShowCategoryForm(false)}
-                className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all"
-              >
-                Create Category
-              </button>
-            </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCategoryForm(false)
+                    setNewCategory("")
+                    setEditingCategoryId(null)
+                  }}
+                  className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all"
+                >
+                  {editingCategoryId ? "Update Category" : "Create Category"}
+                </button>
+              </div>
           </form>
         )}
 
@@ -174,33 +235,62 @@ export function Skills() {
                   </h3>
                 </div>
                 {isAdmin && (
-                  <button
-                    onClick={async () => {
-                      if (!confirm("Delete this category and all its skills?")) return
-                      try {
-                        await api.deleteSkillCategory(cat.id)
-                        await refresh()
-                      } catch (err) {
-                        console.error("Failed to delete category:", err)
-                      }
-                    }}
-                    title="Delete Category"
-                    className="p-2 bg-destructive/10 border border-destructive/20 rounded-lg hover:bg-destructive/20 transition-colors"
-                    aria-label={`Delete ${cat.name} category`}
-                  >
-                    <Trash className="w-4 h-4 text-destructive" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => startEditCategory(cat)}
+                      title="Edit Category"
+                      className="p-2 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20 transition-colors"
+                      aria-label={`Edit ${cat.name} category`}
+                    >
+                      <Edit className="w-4 h-4 text-accent" />
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!confirm("Delete this category and all its skills?")) return
+                        try {
+                          await api.deleteSkillCategory(cat.id)
+                          await refresh()
+                        } catch (err) {
+                          console.error("Failed to delete category:", err)
+                        }
+                      }}
+                      title="Delete Category"
+                      className="p-2 bg-destructive/10 border border-destructive/20 rounded-lg hover:bg-destructive/20 transition-colors"
+                      aria-label={`Delete ${cat.name} category`}
+                    >
+                      <Trash className="w-4 h-4 text-destructive" />
+                    </button>
+                  </div>
                 )}
               </div>
               {cat.skills && cat.skills.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
                   {cat.skills.map((skill) => (
-                    <span
-                      key={skill.id}
-                      className="px-3 py-1.5 bg-accent/10 text-accent text-sm font-medium rounded-lg border border-accent/20 hover:bg-accent/20 hover:scale-105 transition-all duration-200 cursor-default"
-                    >
-                      {skill.name}
-                    </span>
+                    <div key={skill.id} className="relative group">
+                      <span
+                        className="px-3 py-1.5 bg-accent/10 text-accent text-sm font-medium rounded-lg border border-accent/20 hover:bg-accent/20 hover:scale-105 transition-all duration-200 cursor-default inline-flex items-center gap-1"
+                      >
+                        {skill.name}
+                      </span>
+                      {isAdmin && (
+                        <div className="absolute -top-1 -right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => startEditSkill(skill, cat.id)}
+                            className="p-1 bg-accent/20 border border-accent/30 rounded hover:bg-accent/30"
+                            title="Edit skill"
+                          >
+                            <Edit className="w-3 h-3 text-accent" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteSkill(skill.id)}
+                            className="p-1 bg-destructive/20 border border-destructive/30 rounded hover:bg-destructive/30"
+                            title="Delete skill"
+                          >
+                            <Trash className="w-3 h-3 text-destructive" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -209,20 +299,12 @@ export function Skills() {
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault()
-                    const name = (newSkill[cat.id] || "").trim()
-                    if (!name) return
-                    try {
-                      await api.createSkill({ name, category_id: cat.id, order_index: (cat.skills?.length || 0) })
-                      setNewSkill({ ...newSkill, [cat.id]: "" })
-                      await refresh()
-                    } catch (err) {
-                      console.error("Failed to add skill:", err)
-                    }
+                    await handleSkillSubmit(cat.id)
                   }}
                   className="mt-4 flex gap-2"
                 >
                   <input
-                    placeholder="Add skill"
+                    placeholder={editingSkillId[cat.id] ? "Edit skill" : "Add skill"}
                     className="flex-1 px-3 py-2 bg-input border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent transition-all text-sm"
                     value={newSkill[cat.id] || ""}
                     onChange={(e) => setNewSkill({ ...newSkill, [cat.id]: e.target.value })}
@@ -231,8 +313,20 @@ export function Skills() {
                     type="submit"
                     className="px-4 py-2 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all text-sm"
                   >
-                    Add
+                    {editingSkillId[cat.id] ? "Update" : "Add"}
                   </button>
+                  {editingSkillId[cat.id] && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNewSkill({ ...newSkill, [cat.id]: "" })
+                        setEditingSkillId({ ...editingSkillId, [cat.id]: null })
+                      }}
+                      className="px-4 py-2 border border-border rounded-lg hover:bg-secondary transition-colors text-sm"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </form>
               )}
             </div>

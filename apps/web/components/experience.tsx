@@ -2,14 +2,16 @@
 
 import { useExperiences } from "@/lib/hooks"
 import { api } from "@/lib/api"
-import { Plus, Trash, Briefcase } from "lucide-react"
-import { useMemo, useState } from "react"
+import { Plus, Trash, Briefcase, Edit } from "lucide-react"
+import { useState } from "react"
 import { SectionBackground } from "@/components/section-background"
+import { useAdmin } from "@/contexts/AdminContext"
 
 export function Experience() {
   const { experiences, loading, error, refresh } = useExperiences()
-  const isAdmin = useMemo(() => process.env.NEXT_PUBLIC_ADMIN === "true", [])
+  const { isAdmin } = useAdmin()
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [creating, setCreating] = useState(false)
   const [form, setForm] = useState({
     role: "",
@@ -21,11 +23,31 @@ export function Experience() {
     tags: "",
   })
 
-  async function handleCreate(e: React.FormEvent) {
+  const resetForm = () => {
+    setForm({ role: "", company: "", period: "", start_date: "", end_date: "", description: "", tags: "" })
+    setEditingId(null)
+    setShowForm(false)
+  }
+
+  const startEdit = (exp: typeof experiences[0]) => {
+    setForm({
+      role: exp.role,
+      company: exp.company,
+      period: exp.period,
+      start_date: exp.start_date || "",
+      end_date: exp.end_date || "",
+      description: exp.description,
+      tags: exp.tags?.join(", ") || "",
+    })
+    setEditingId(exp.id)
+    setShowForm(true)
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     try {
       setCreating(true)
-      await api.createExperience({
+      const data = {
         role: form.role,
         company: form.company,
         period: form.period,
@@ -33,13 +55,20 @@ export function Experience() {
         end_date: form.end_date || undefined,
         description: form.description,
         tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
-        order_index: experiences?.length || 0,
-      })
-      setShowForm(false)
-      setForm({ role: "", company: "", period: "", start_date: "", end_date: "", description: "", tags: "" })
+      }
+
+      if (editingId) {
+        await api.updateExperience(editingId, data)
+      } else {
+        await api.createExperience({
+          ...data,
+          order_index: experiences?.length || 0,
+        })
+      }
+      resetForm()
       await refresh()
     } catch (err) {
-      console.error("Failed to create experience:", err)
+      console.error(`Failed to ${editingId ? "update" : "create"} experience:`, err)
     } finally {
       setCreating(false)
     }
@@ -110,7 +139,7 @@ export function Experience() {
             )}
           </div>
           {isAdmin && showForm && (
-            <form onSubmit={handleCreate} className="mb-10 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg">
+            <form onSubmit={handleSubmit} className="mb-10 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg">
               <div className="grid md:grid-cols-2 gap-4">
                 <input
                   required
@@ -165,7 +194,7 @@ export function Experience() {
               <div className="flex gap-3 justify-end">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={resetForm}
                   className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
                 >
                   Cancel
@@ -175,7 +204,7 @@ export function Experience() {
                   disabled={creating}
                   className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all disabled:opacity-50"
                 >
-                  {creating ? "Creating..." : "Create Experience"}
+                  {creating ? (editingId ? "Updating..." : "Creating...") : (editingId ? "Update Experience" : "Create Experience")}
                 </button>
               </div>
             </form>
@@ -207,7 +236,7 @@ export function Experience() {
         </div>
 
         {isAdmin && showForm && (
-          <form onSubmit={handleCreate} className="mb-12 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg">
+          <form onSubmit={handleSubmit} className="mb-12 grid gap-4 p-6 border border-border rounded-xl bg-card shadow-lg">
             <div className="grid md:grid-cols-2 gap-4">
               <input
                 required
@@ -259,22 +288,22 @@ export function Experience() {
               value={form.tags}
               onChange={(e) => setForm({ ...form, tags: e.target.value })}
             />
-            <div className="flex gap-3 justify-end">
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={creating}
-                className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all disabled:opacity-50"
-              >
-                {creating ? "Creating..." : "Create Experience"}
-              </button>
-            </div>
+              <div className="flex gap-3 justify-end">
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-6 py-2.5 border border-border rounded-lg hover:bg-secondary transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="px-6 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium hover:shadow-lg hover:shadow-accent/30 transition-all disabled:opacity-50"
+                >
+                  {creating ? (editingId ? "Updating..." : "Creating...") : (editingId ? "Update Experience" : "Create Experience")}
+                </button>
+              </div>
           </form>
         )}
 
@@ -287,7 +316,15 @@ export function Experience() {
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent to-primary rounded-l-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
               
               {isAdmin && (
-                <div className="absolute top-4 right-4">
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button
+                    onClick={() => startEdit(exp)}
+                    title="Edit Experience"
+                    className="p-2 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20 transition-colors backdrop-blur-sm"
+                    aria-label={`Edit experience at ${exp.company}`}
+                  >
+                    <Edit className="w-4 h-4 text-accent" />
+                  </button>
                   <button
                     onClick={() => handleDelete(exp.id)}
                     title="Delete Experience"

@@ -133,28 +133,29 @@ export function useAbout() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function fetchAbout() {
-      try {
-        setLoading(true)
-        const [aboutData, statsData] = await Promise.all([
-          api.getAboutContent(),
-          api.getStats(),
-        ])
-        setAbout(aboutData)
-        setStats(statsData)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch about content')
-        console.error('Error fetching about:', err)
-      } finally {
-        setLoading(false)
-      }
+  const refresh = useCallback(async () => {
+    try {
+      setLoading(true)
+      const [aboutData, statsData] = await Promise.all([
+        api.getAboutContent(),
+        api.getStats(),
+      ])
+      setAbout(aboutData)
+      setStats(statsData)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch about content')
+      console.error('Error fetching about:', err)
+    } finally {
+      setLoading(false)
     }
-
-    fetchAbout()
   }, [])
 
-  return { about, stats, loading, error }
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  return { about, stats, loading, error, refresh }
 }
 
 // Custom hook for fetching social links

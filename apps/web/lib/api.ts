@@ -169,6 +169,13 @@ class ApiClient {
     })
   }
 
+  async updateExperience(id: number, data: Partial<Experience>): Promise<Experience> {
+    return this.fetch<Experience>(`/experiences/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
   async deleteExperience(id: number): Promise<void> {
     await this.fetch<void>(`/experiences/${id}`, {
       method: 'DELETE',
@@ -191,9 +198,29 @@ class ApiClient {
     })
   }
 
+  async updateSkillCategory(id: number, data: { name?: string; order_index?: number }): Promise<SkillCategory> {
+    return this.fetch<SkillCategory>(`/skills/categories/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteSkillCategory(id: number): Promise<void> {
+    await this.fetch<void>(`/skills/categories/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
   async createSkill(data: { name: string; category_id: number; order_index?: number }): Promise<Skill> {
     return this.fetch<Skill>('/skills/', {
       method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateSkill(id: number, data: { name?: string; category_id?: number; order_index?: number }): Promise<Skill> {
+    return this.fetch<Skill>(`/skills/${id}`, {
+      method: 'PUT',
       body: JSON.stringify(data),
     })
   }
@@ -204,19 +231,53 @@ class ApiClient {
     })
   }
 
-  async deleteSkillCategory(id: number): Promise<void> {
-    await this.fetch<void>(`/skills/categories/${id}`, {
-      method: 'DELETE',
-    })
-  }
-
   // About
   async getAboutContent(): Promise<About[]> {
     return this.fetch<About[]>('/about/content')
   }
 
+  async createAbout(data: { section: string; content: string; order_index?: number }): Promise<About> {
+    return this.fetch<About>('/about/content', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateAbout(id: number, data: { section?: string; content?: string; order_index?: number }): Promise<About> {
+    return this.fetch<About>(`/about/content/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteAbout(id: number): Promise<void> {
+    await this.fetch<void>(`/about/content/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
   async getStats(): Promise<Stat[]> {
     return this.fetch<Stat[]>('/about/stats')
+  }
+
+  async createStat(data: { number: string; label: string; order_index?: number }): Promise<Stat> {
+    return this.fetch<Stat>('/about/stats', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateStat(id: number, data: { number?: string; label?: string; order_index?: number }): Promise<Stat> {
+    return this.fetch<Stat>(`/about/stats/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async deleteStat(id: number): Promise<void> {
+    await this.fetch<void>(`/about/stats/${id}`, {
+      method: 'DELETE',
+    })
   }
 
   // Social Links
@@ -232,6 +293,13 @@ class ApiClient {
   async createContact(data: { name: string; email: string; message: string }): Promise<Contact> {
     return this.fetch<Contact>('/contacts/', {
       method: 'POST',
+      body: JSON.stringify(data),
+    })
+  }
+
+  async updateContact(id: number, data: { name?: string; email?: string; message?: string; status?: string }): Promise<Contact> {
+    return this.fetch<Contact>(`/contacts/${id}`, {
+      method: 'PUT',
       body: JSON.stringify(data),
     })
   }

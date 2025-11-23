@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 // import ThemeToggle from "next-themes"
 import ThemeToggle from "@/components/ThemeToggle"
+import { AdminLogin } from "@/components/admin-login"
 
 
 export function Navigation() {
@@ -87,6 +88,9 @@ export function Navigation() {
 
             {/* add a button to toggle the dark mode   */}
             <ThemeToggle />
+            
+            {/* Admin Login Button */}
+            <AdminLogin />
 
           </div>
 
@@ -129,6 +133,10 @@ export function Navigation() {
                 </a>
               )
             })}
+            <div className="flex items-center gap-2 px-4 py-2">
+              <ThemeToggle />
+              <AdminLogin />
+            </div>
           </div>
         )}
       </div>

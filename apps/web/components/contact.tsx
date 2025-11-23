@@ -2,19 +2,32 @@
 
 import type React from "react"
 
-import { useState, useMemo } from "react"
-import { Mail, MessageSquare, Send, Trash } from "lucide-react"
+import { useState } from "react"
+import { Mail, MessageSquare, Send, Trash, Edit, Check } from "lucide-react"
 import { api } from "@/lib/api"
 import { useContacts } from "@/lib/hooks"
 import { SectionBackground } from "@/components/section-background"
+import { useAdmin } from "@/contexts/AdminContext"
 
 export function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const isAdmin = useMemo(() => process.env.NEXT_PUBLIC_ADMIN === "true", [])
+  const { isAdmin } = useAdmin()
   const { contacts, refresh: refreshContacts } = useContacts()
+  const [editingContactId, setEditingContactId] = useState<number | null>(null)
+  const [contactStatus, setContactStatus] = useState<string>("")
+
+  const handleStatusUpdate = async (id: number, status: string) => {
+    try {
+      await api.updateContact(id, { status })
+      await refreshContacts()
+      setEditingContactId(null)
+    } catch (err) {
+      console.error("Failed to update contact status:", err)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -151,17 +164,61 @@ export function Contact() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${
-                              contact.status === "new"
-                                ? "bg-blue-500/20 text-blue-400"
-                                : contact.status === "read"
-                                ? "bg-green-500/20 text-green-400"
-                                : "bg-gray-500/20 text-gray-400"
-                            }`}
-                          >
-                            {contact.status || "new"}
-                          </span>
+                          {editingContactId === contact.id ? (
+                            <div className="flex gap-2 items-center">
+                              <select
+                                value={contactStatus}
+                                onChange={(e) => setContactStatus(e.target.value)}
+                                className="px-2 py-1 bg-input border border-border rounded text-xs"
+                                autoFocus
+                              >
+                                <option value="new">New</option>
+                                <option value="read">Read</option>
+                                <option value="replied">Replied</option>
+                              </select>
+                              <button
+                                onClick={() => handleStatusUpdate(contact.id, contactStatus)}
+                                className="p-1 bg-accent/20 rounded hover:bg-accent/30"
+                                title="Save"
+                              >
+                                <Check className="w-3 h-3 text-accent" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingContactId(null)
+                                  setContactStatus("")
+                                }}
+                                className="p-1 bg-secondary rounded hover:bg-secondary/80"
+                                title="Cancel"
+                              >
+                                <Trash className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`px-2 py-1 rounded text-xs ${
+                                  contact.status === "new"
+                                    ? "bg-blue-500/20 text-blue-400"
+                                    : contact.status === "read"
+                                    ? "bg-green-500/20 text-green-400"
+                                    : "bg-gray-500/20 text-gray-400"
+                                }`}
+                              >
+                                {contact.status || "new"}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  setEditingContactId(contact.id)
+                                  setContactStatus(contact.status || "new")
+                                }}
+                                className="p-1 bg-accent/10 border border-accent/20 rounded hover:bg-accent/20"
+                                title="Edit status"
+                              >
+                                <Edit className="w-3 h-3 text-accent" />
+                              </button>
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-3 text-sm text-muted-foreground">
                           {contact.created_at

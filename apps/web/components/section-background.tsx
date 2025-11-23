@@ -7,7 +7,7 @@ interface SectionBackgroundProps {
   opacity?: string
 }
 
-export function SectionBackground({ variant = "hexagons", opacity = "0.03" }: SectionBackgroundProps) {
+export function SectionBackground({ variant = "hexagons", opacity = "0.04" }: SectionBackgroundProps) {
   const opacityStyle = { opacity: parseFloat(opacity) }
 
   // Hero Pattern - Dynamic flowing shapes

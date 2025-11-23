@@ -1,10 +1,11 @@
 "use client"
 
-import { ExternalLink, Github, Plus, Trash, X, Maximize2, GripVertical } from "lucide-react"
+import { ExternalLink, Github, Plus, Trash, X, Maximize2, GripVertical, Edit } from "lucide-react"
 import { useProjects } from "@/lib/hooks"
 import { api } from "@/lib/api"
-import { useMemo, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { SectionBackground } from "@/components/section-background"
+import { useAdmin } from "@/contexts/AdminContext"
 import {
   DndContext,
   closestCenter,
@@ -23,17 +24,20 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import type { Project } from "@/lib/api"
+import { EditProjectModal } from "@/components/edit-project-modal"
 
 // Sortable Project Card Component
 function SortableProjectCard({
   project,
   isAdmin,
   onDelete,
+  onEdit,
   onImageClick,
 }: {
   project: Project
   isAdmin: boolean
   onDelete: (id: number) => void
+  onEdit: (project: Project) => void
   onImageClick: (image: string) => void
 }) {
   const {
@@ -67,14 +71,24 @@ function SortableProjectCard({
           <GripVertical className="w-4 h-4 text-muted-foreground" />
         </button>
         {isAdmin && (
-          <button
-            onClick={() => onDelete(project.id)}
-            title="Delete Project"
-            className="p-2 bg-destructive/10 border border-destructive/20 rounded-lg hover:bg-destructive/20 transition-colors backdrop-blur-sm"
-            aria-label={`Delete ${project.title}`}
-          >
-            <Trash className="w-4 h-4 text-destructive" />
-          </button>
+          <>
+            <button
+              onClick={() => onEdit(project)}
+              title="Edit Project"
+              className="p-2 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20 transition-colors backdrop-blur-sm"
+              aria-label={`Edit ${project.title}`}
+            >
+              <Edit className="w-4 h-4 text-accent" />
+            </button>
+            <button
+              onClick={() => onDelete(project.id)}
+              title="Delete Project"
+              className="p-2 bg-destructive/10 border border-destructive/20 rounded-lg hover:bg-destructive/20 transition-colors backdrop-blur-sm"
+              aria-label={`Delete ${project.title}`}
+            >
+              <Trash className="w-4 h-4 text-destructive" />
+            </button>
+          </>
         )}
       </div>
       {project.image && (
@@ -150,10 +164,11 @@ function SortableProjectCard({
 
 export function Projects() {
   const { projects, loading, error, refresh } = useProjects()
-  const isAdmin = useMemo(() => process.env.NEXT_PUBLIC_ADMIN === "true", [])
+  const { isAdmin } = useAdmin()
   const [showForm, setShowForm] = useState(false)
   const [creating, setCreating] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [editingProject, setEditingProject] = useState<Project | null>(null)
   const [items, setItems] = useState<Project[]>([])
   const [form, setForm] = useState({
     title: "",
@@ -219,6 +234,16 @@ export function Projects() {
       await refresh()
     } catch (err) {
       console.error("Failed to delete project:", err)
+    }
+  }
+
+  async function handleEdit(id: number, data: Partial<Project>) {
+    try {
+      await api.updateProject(id, data)
+      await refresh()
+    } catch (err) {
+      console.error("Failed to update project:", err)
+      throw err
     }
   }
 
@@ -479,6 +504,7 @@ export function Projects() {
                     project={project}
                     isAdmin={isAdmin}
                     onDelete={handleDelete}
+                    onEdit={setEditingProject}
                     onImageClick={setSelectedImage}
                   />
                 ))}
@@ -487,6 +513,15 @@ export function Projects() {
           </DndContext>
       </div>
     </section>
+
+      {/* Edit Modal */}
+      {editingProject && (
+        <EditProjectModal
+          project={editingProject}
+          onClose={() => setEditingProject(null)}
+          onSave={handleEdit}
+        />
+      )}
 
       {/* Image Modal */}
       {selectedImage && (

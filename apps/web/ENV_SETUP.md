@@ -6,6 +6,7 @@ Create a `.env.local` file in the `/apps/web/` directory with the following cont
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_ADMIN_PASSWORD=your-secure-password-here
 ```
 
 ## For Docker
@@ -38,9 +39,23 @@ It will:
 1. Use `NEXT_PUBLIC_API_URL` if set
 2. Fall back to `http://localhost:8000` if not set
 
+## Admin Authentication
+
+The admin login feature uses the `NEXT_PUBLIC_ADMIN_PASSWORD` environment variable:
+
+```env
+NEXT_PUBLIC_ADMIN_PASSWORD=your-secure-password-here
+```
+
+- **Default password**: If not set, the default password is `admin123` (change this in production!)
+- **Security**: Use a strong password in production
+- **Access**: Click the "Admin" button in the navigation bar to login
+- **Persistence**: Admin session is stored in localStorage and persists across page refreshes
+
 ## Important Notes
 
 - The `NEXT_PUBLIC_` prefix is required for Next.js to expose the variable to the browser
 - Restart the Next.js dev server after creating/modifying `.env.local`
 - `.env.local` is gitignored and won't be committed
+- **Change the default admin password** before deploying to production!
 
