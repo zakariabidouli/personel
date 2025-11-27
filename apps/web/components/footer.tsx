@@ -3,6 +3,7 @@
 import { Github, Linkedin, Twitter, Mail, Icon } from "lucide-react"
 import { useSocialLinks } from "@/lib/hooks"
 import { SectionBackground } from "@/components/section-background" 
+import { AdminLogin } from "@/components/admin-login"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -50,6 +51,7 @@ export function Footer() {
               </div>
             </div>
           )}
+          <AdminLogin/>
           </div>
           {/* <div>
             <h4 className="font-bold mb-4">Connect</h4>

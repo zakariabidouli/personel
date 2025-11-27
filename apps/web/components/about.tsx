@@ -188,11 +188,11 @@ export function About() {
               about.map((section, idx) => (
                 <div
                   key={section.id}
-                  className="group relative p-6 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5"
+                  className="group relative p-8 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-accent/5"
                   style={{ animationDelay: `${idx * 100}ms` }}
                 >
                   {isAdmin && (
-                    <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-y-1 right-1 gap-1 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => startEditAbout(section)}
                         className="p-2 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20"
@@ -286,7 +286,7 @@ export function About() {
                     style={{ animationDelay: `${idx * 100}ms` }}
                   >
                     {isAdmin && (
-                      <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-y-1 right-1 gap-1 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => startEditStat(stat)}
                           className="p-1.5 bg-accent/10 border border-accent/20 rounded-lg hover:bg-accent/20"

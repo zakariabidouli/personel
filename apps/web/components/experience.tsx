@@ -316,7 +316,7 @@ export function Experience() {
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent to-primary rounded-l-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
               
               {isAdmin && (
-                <div className="absolute top-4 right-4 flex gap-2">
+                <div className="absolute bottom-4 right-10 flex gap-2">
                   <button
                     onClick={() => startEdit(exp)}
                     title="Edit Experience"

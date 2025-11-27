@@ -28,9 +28,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import Base, engine
 from app.core.config import settings
-from app.routes import projects, experiences, contacts, skills, about, social_links
+from app.routes import projects, experiences, contacts, skills, about, social_links, resume
 # Import all models to ensure they're registered
-from app.models import Project, Experience, Skill, SkillCategory, Contact, About, Stat, SocialLink
+from app.models import Project, Experience, Skill, SkillCategory, Contact, About, Stat, SocialLink, Resume
 
 app = FastAPI(
     title="Zakaria Portfolio API",
@@ -63,6 +63,7 @@ app.include_router(contacts.router)
 app.include_router(skills.router)
 app.include_router(about.router)
 app.include_router(social_links.router)
+app.include_router(resume.router)
 
 @app.get("/health")
 def health_check():

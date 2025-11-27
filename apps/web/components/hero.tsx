@@ -1,8 +1,13 @@
 "use client"
 
-import { ArrowRight, Github, Linkedin, Mail, Download } from "lucide-react"
-import { useSocialLinks } from "@/lib/hooks"
+import { ArrowRight, Github, Linkedin, Mail, Download, Trash2, UploadCloud } from "lucide-react"
+import { useSocialLinks, useResume } from "@/lib/hooks"
 import { SectionBackground } from "@/components/section-background"
+import { useAdmin } from "@/contexts/AdminContext"
+import { api } from "@/lib/api"
+import { useState } from "react"
+// import useState
+
 
 // Icon mapping
 const iconMap: Record<string, typeof Github> = {
@@ -109,6 +114,9 @@ function DeveloperIllustration() {
 
 export function Hero() {
   const { links } = useSocialLinks()
+  const { resume, refresh: refreshResume } = useResume()
+  const { isAdmin } = useAdmin()
+  const [uploading, setUploading] = useState(false)
 
   const scrollToProjects = () => {
     const element = document.getElementById("projects")
@@ -148,24 +156,87 @@ export function Hero() {
           intuitive interfaces, and scalable solutions.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-          <button
-            onClick={scrollToProjects}
-            className="group relative px-8 py-3.5 bg-gradient-to-r from-accent to-primary text-accent-foreground rounded-lg font-semibold hover:shadow-2xl hover:shadow-accent/30 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden"
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              View My Work
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </button>
-          <button
-            className="group px-8 py-3.5 border-2 border-border text-foreground rounded-lg font-semibold hover:bg-secondary hover:border-accent/50 transition-all duration-300 flex items-center justify-center gap-2"
-            aria-label="Download CV"
-          >
-            <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-            Download CV
-          </button>
+        <div className="flex flex-col gap-4 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={scrollToProjects}
+              className="group relative px-8 py-3.5 bg-gradient-to-r from-accent to-primary text-accent-foreground rounded-lg font-semibold hover:shadow-2xl hover:shadow-accent/30 transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                View My Work
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+
+            {resume?.file_url ? (
+              <a
+                href={resume.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group px-8 py-3.5 border-2 border-border text-foreground rounded-lg font-semibold hover:bg-secondary hover:border-accent/50 transition-all duration-300 flex items-center justify-center gap-2"
+                aria-label="Download CV"
+              >
+                <Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                Download CV
+              </a>
+            ) : (
+              <button
+                className="group px-8 py-3.5 border-2 border-dashed border-border text-muted-foreground rounded-lg font-semibold cursor-not-allowed flex items-center justify-center gap-2"
+                aria-label="Download CV"
+                disabled
+              >
+                <Download className="w-4 h-4" />
+                Resume not available
+              </button>
+            )}
+          </div>
+
+          {isAdmin && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs sm:text-sm text-muted-foreground">
+              <label className="flex items-center gap-2 px-4 py-2 border border-dashed border-border rounded-lg hover:border-accent/50 hover:bg-secondary/40 cursor-pointer transition-colors">
+                <UploadCloud className="w-4 h-4 text-accent" />
+                <span>{uploading ? "Uploading..." : resume ? "Replace resume (PDF)" : "Upload resume (PDF)"}</span>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    try {
+                      setUploading(true)
+                      await api.uploadResume(file)
+                      await refreshResume()
+                    } catch (err) {
+                      console.error("Failed to upload resume:", err)
+                    } finally {
+                      setUploading(false)
+                      e.target.value = ""
+                    }
+                  }}
+                />
+              </label>
+
+              {resume && (
+                <button
+                  onClick={async () => {
+                    if (!confirm("Delete the current resume PDF?")) return
+                    try {
+                      await api.deleteResume(resume.id)
+                      await refreshResume()
+                    } catch (err) {
+                      console.error("Failed to delete resume:", err)
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 border border-destructive/40 text-destructive rounded-lg hover:bg-destructive/10 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete resume
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Social Links */}

@@ -92,6 +92,14 @@ export interface SocialLink {
   updated_at?: string | null
 }
 
+export interface Resume {
+  id: number
+  original_filename: string
+  mime_type: string
+  file_url: string
+  created_at?: string | null
+}
+
 // API Client
 class ApiClient {
   private baseUrl: string
@@ -101,10 +109,11 @@ class ApiClient {
   }
 
   private async fetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const isFormData = options?.body instanceof FormData
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...options?.headers,
       },
     })
@@ -306,6 +315,26 @@ class ApiClient {
 
   async deleteContact(id: number): Promise<void> {
     await this.fetch<void>(`/contacts/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  // Resume
+  async getLatestResume(): Promise<Resume | null> {
+    return this.fetch<Resume | null>('/resume/latest')
+  }
+
+  async uploadResume(file: File): Promise<Resume> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return this.fetch<Resume>('/resume/', {
+      method: 'POST',
+      body: formData,
+    })
+  }
+
+  async deleteResume(id: number): Promise<void> {
+    await this.fetch<void>(`/resume/${id}`, {
       method: 'DELETE',
     })
   }

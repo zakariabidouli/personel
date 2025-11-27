@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { api, Project, Experience, SkillCategory, About, Stat, SocialLink, Contact } from './api'
+import { api, Project, Experience, SkillCategory, About, Stat, SocialLink, Contact, Resume } from './api'
 
 // Custom hook for fetching projects
 export function useProjects() {
@@ -209,5 +209,32 @@ export function useContacts() {
   }, [refresh])
 
   return { contacts, loading, error, refresh, setContacts }
+}
+
+// Custom hook for fetching resume
+export function useResume() {
+  const [resume, setResume] = useState<Resume | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const refresh = useCallback(async () => {
+    try {
+      setLoading(true)
+      const data = await api.getLatestResume()
+      setResume(data)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch resume')
+      console.error('Error fetching resume:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
+  return { resume, loading, error, refresh, setResume }
 }
 
